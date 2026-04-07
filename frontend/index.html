@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MudrasAI</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f2f6fb; color: #20232a; }
+    header { background: #293241; color: white; padding: 20px; text-align: center; }
+    main { max-width: 900px; margin: 24px auto; padding: 0 16px; }
+    .card { background: white; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 20px; padding: 20px; }
+    button { background: #3d5a80; color: white; border: none; border-radius: 8px; padding: 12px 16px; cursor: pointer; }
+    button:hover { background: #2c4d72; }
+    input, select, textarea { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid #cbd5e1; }
+    .result { margin-top: 16px; }
+    .mudra-item { margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MudrasAI</h1>
+    <p>Your DevOps-ready mudra recommendation assistant</p>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Wellness Recommendation</h2>
+      <p>Choose what you want to improve, then get mudra suggestions.</p>
+      <label for="goal">Your goal</label>
+      <select id="goal">
+        <option value="stress">Reduce stress</option>
+        <option value="focus">Improve focus</option>
+        <option value="energy">Increase energy</option>
+        <option value="digestion">Support digestion</option>
+        <option value="sleep">Better sleep</option>
+      </select>
+      <button id="recommend">Get Recommendations</button>
+      <div id="recommendation-result" class="result"></div>
+    </div>
+
+    <div class="card">
+      <h2>Mudra Detection (demo)</h2>
+      <p>Type a hint about how your mudra feels and see the predicted match.</p>
+      <label for="hint">Gesture hint</label>
+      <input id="hint" placeholder="e.g. calm, energy, brain focus" />
+      <button id="detect">Detect Mudra</button>
+      <div id="detection-result" class="result"></div>
+    </div>
+
+    <div class="card">
+      <h2>Available Mudras</h2>
+      <div id="mudra-list"></div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
