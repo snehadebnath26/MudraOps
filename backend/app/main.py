@@ -278,11 +278,3 @@ def get_daily_stats():
 def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
-        return {"mudra": "Gyan Mudra", "confidence": 0.9}
-    if "energy" in text or "life" in text:
-        return {"mudra": "Prana Mudra", "confidence": 0.9}
-    if "detox" in text or "digest" in text:
-        return {"mudra": "Apana Mudra", "confidence": 0.9}
-    if "patience" in text or "calm" in text:
-        return {"mudra": "Shuni Mudra", "confidence": 0.9}
-    raise HTTPException(status_code=400, detail="Unable to detect mudra from hint")
