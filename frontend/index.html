@@ -4,27 +4,131 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MudrasAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f2f6fb; color: #20232a; }
-    header { background: #293241; color: white; padding: 20px; text-align: center; }
-    main { max-width: 900px; margin: 24px auto; padding: 0 16px; }
-    .card { background: white; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 20px; padding: 20px; }
-    button { background: #3d5a80; color: white; border: none; border-radius: 8px; padding: 12px 16px; cursor: pointer; }
-    button:hover { background: #2c4d72; }
-    input, select, textarea { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid #cbd5e1; }
-    .result { margin-top: 16px; }
-    .mudra-item { margin-bottom: 12px; }
+    :root { --primary: #ff6b35; --secondary: #4ecdc4; --accent: #667eea; --dark: #2c3e50; --light: #f5f7fa; --dark-bg: #1a1a2e; --dark-card: #16213e; }
+    body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); color: #2c3e50; line-height: 1.6; transition: background 0.3s ease, color 0.3s ease; }
+    body.dark-mode { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e0e0e0; }
+    body.dark-mode .card { background: var(--dark-card); border-color: rgba(78, 205, 196, 0.2); }
+    body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #0f3460; color: #e0e0e0; border-color: #4ecdc4; }
+    header { background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 100%); color: white; padding: 30px 20px; text-align: center; box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3); display: flex; justify-content: space-between; align-items: center; }
+    header > div:first-child { flex: 1; }
+    header h1 { margin: 0; font-size: 2.8em; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-family: 'Playfair Display', serif; letter-spacing: -1px; }
+    header p { margin: 10px 0 0; font-size: 1.1em; opacity: 0.9; font-weight: 300; }
+    .header-controls { display: flex; gap: 15px; }
+    .theme-toggle { background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px; transition: all 0.3s ease; }
+    .theme-toggle:hover { background: rgba(255,255,255,0.3); }
+    main { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+    .card { background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); margin-bottom: 25px; padding: 25px; border: 1px solid rgba(255,255,255,0.8); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.15); }
+    .card h2 { color: #ff6b35; margin-top: 0; font-size: 2em; border-bottom: 3px solid #ff9a56; padding-bottom: 10px; font-family: 'Poppins', sans-serif; font-weight: 700; letter-spacing: 0.5px; }
+    body.dark-mode .card h2 { color: #ff9a56; }
+    button { background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); color: white; border: none; border-radius: 12px; padding: 14px 20px; cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3); font-size: 15px; letter-spacing: 0.3px; }
+    button:hover { background: linear-gradient(135deg, #44a08d 0%, #3d8b7a 100%); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4); }
+    button:active { transform: translateY(0); }
+    label { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1.05em; }
+    input, select, textarea { width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; border: 2px solid #e1e8ed; font-size: 16px; transition: border-color 0.3s ease; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #4ecdc4; box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2); }
+    .result { margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #4ecdc4; }
+    .mudra-item { margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #ff9a56; transition: background-color 0.3s ease; }
+    .mudra-item:hover { background: #e9ecef; }
+    .mudra-item strong { color: #2c3e50; font-size: 1.15em; font-family: 'Poppins', sans-serif; font-weight: 700; }
+    body.dark-mode .mudra-item strong { color: #ff9a56; }
+    .mudra-item em { color: #6c757d; font-family: 'Inter', sans-serif; }
+    body.dark-mode .mudra-item em { color: #a0a0a0; }
+    .difficulty-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.85em; font-weight: 600; margin-left: 10px; }
+    .difficulty-beginner { background: #d4edda; color: #155724; }
+    .difficulty-intermediate { background: #fff3cd; color: #856404; }
+    .difficulty-advanced { background: #f8d7da; color: #721c24; }
+    .search-container { margin-bottom: 20px; }
+    .search-container input { max-width: 400px; }
+    .favorites-section { margin-top: 30px; }
+    .favorite-btn { background: #ff6b35 !important; margin-left: 10px; padding: 8px 12px; font-size: 14px; }
+    .favorite-btn:hover { background: #e55a2b !important; }
+    .mood-tracker { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+    .mood-btn { padding: 10px 15px; border-radius: 20px; border: 2px solid #4ecdc4; background: white; color: #4ecdc4; cursor: pointer; transition: all 0.3s ease; }
+    .mood-btn:hover, .mood-btn.active { background: #4ecdc4; color: white; }
+    .tutorial-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-top: 15px; }
+    .tutorial-btn:hover { background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%); }
+    .animate-fade-in { animation: fadeIn 0.5s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; }
+    .stat-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; }
+    .stat-box h3 { margin: 0; font-size: 2em; font-family: 'Poppins', sans-serif; font-weight: 700; }
+    .stat-box p { margin: 8px 0 0; font-size: 0.9em; opacity: 0.9; }
+    .timer-section { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 25px; border-radius: 12px; text-align: center; margin-top: 15px; }
+    .timer-display { font-size: 3em; font-family: 'Poppins', sans-serif; font-weight: 700; margin: 15px 0; }
+    .daily-suggestion { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 12px; margin-top: 15px; }
+    .daily-suggestion h4 { margin-top: 0; color: #d97706; font-family: 'Poppins', sans-serif; }
+    .quartz-filter { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+    .filter-btn { padding: 8px 14px; border: 2px solid #4ecdc4; background: white; color: #4ecdc4; border-radius: 20px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600; transition: all 0.3s ease; }
+    .filter-btn.active { background: #4ecdc4; color: white; }
+    .filter-btn:hover { background: #4ecdc4; color: white; }
   </style>
 </head>
 <body>
   <header>
-    <h1>MudrasAI</h1>
-    <p>Your DevOps-ready mudra recommendation assistant</p>
+    <div>
+      <h1>🧘 MudrasAI</h1>
+      <p>Your personalized mudra guide for wellness</p>
+    </div>
+    <div class="header-controls">
+      <button class="theme-toggle" id="themeToggle">🌙</button>
+    </div>
   </header>
   <main>
-    <div class="card">
-      <h2>Wellness Recommendation</h2>
-      <p>Choose what you want to improve, then get mudra suggestions.</p>
+    <div class="card animate-fade-in">
+      <h2>📊 Your Practice Stats</h2>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <h3 id="totalPracticed">0</h3>
+          <p>Mudras Practiced</p>
+        </div>
+        <div class="stat-box">
+          <h3 id="practiceStreak">0</h3>
+          <p>Day Streak</p>
+        </div>
+        <div class="stat-box">
+          <h3 id="favoritesCount">0</h3>
+          <p>Favorites Saved</p>
+        </div>
+        <div class="stat-box">
+          <h3 id="totalMinutes">0</h3>
+          <p>Minutes Meditated</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card animate-fade-in">
+      <h2>✨ Daily Mudra Suggestion</h2>
+      <div id="daily-suggestion-box" class="daily-suggestion">
+        <h4>🌟 Today's Recommendation</h4>
+        <p id="daily-mudra-text">Loading your daily suggestion...</p>
+        <button id="try-daily" style="margin-top: 10px;">Try This Mudra</button>
+      </div>
+    </div>
+
+    <div class="card animate-fade-in">
+      <h2>⏱️ Mudra Practice Timer</h2>
+      <div class="timer-section">
+        <p>Select duration and start practicing</p>
+        <select id="timer-duration" style="width: 150px; margin: 10px auto; display: block; padding: 10px; border-radius: 8px; border: 2px solid white; background: rgba(255,255,255,0.2); color: white; font-weight: 600;">
+          <option value="5">5 minutes</option>
+          <option value="10" selected>10 minutes</option>
+          <option value="15">15 minutes</option>
+          <option value="20">20 minutes</option>
+        </select>
+        <div class="timer-display" id="timer-display">10:00</div>
+        <button id="start-timer" style="background: white; color: #f5576c; font-weight: 700;">▶️ Start Timer</button>
+        <button id="stop-timer" style="background: white; color: #f5576c; font-weight: 700; display: none;">⏹️ Stop Timer</button>
+      </div>
+    </div>
+
+    <div class="card animate-fade-in">
+      <h2>🎯 Wellness Recommendation</h2>
+      <p>Choose what you want to improve, then get personalized mudra suggestions.</p>
       <label for="goal">Your goal</label>
       <select id="goal">
         <option value="stress">Reduce stress</option>
@@ -32,23 +136,51 @@
         <option value="energy">Increase energy</option>
         <option value="digestion">Support digestion</option>
         <option value="sleep">Better sleep</option>
+        <option value="anxiety">Reduce anxiety</option>
+        <option value="confidence">Boost confidence</option>
+        <option value="creativity">Enhance creativity</option>
       </select>
+      <div class="mood-tracker">
+        <span>How are you feeling today?</span>
+        <button class="mood-btn" data-mood="calm">😌 Calm</button>
+        <button class="mood-btn" data-mood="energetic">⚡ Energetic</button>
+        <button class="mood-btn" data-mood="stressed">😰 Stressed</button>
+        <button class="mood-btn" data-mood="focused">🎯 Focused</button>
+        <button class="mood-btn" data-mood="tired">😴 Tired</button>
+      </div>
       <button id="recommend">Get Recommendations</button>
+      <button class="tutorial-btn" id="tutorial">📚 Learn Mudra Basics</button>
       <div id="recommendation-result" class="result"></div>
     </div>
 
-    <div class="card">
-      <h2>Mudra Detection (demo)</h2>
-      <p>Type a hint about how your mudra feels and see the predicted match.</p>
-      <label for="hint">Gesture hint</label>
-      <input id="hint" placeholder="e.g. calm, energy, brain focus" />
-      <button id="detect">Detect Mudra</button>
+    <div class="card animate-fade-in">
+      <h2>🔍 Mudra Detection (Interactive Demo)</h2>
+      <p>Type a hint about how your mudra feels or describe the gesture, and see the AI prediction.</p>
+      <label for="hint">Gesture description</label>
+      <input id="hint" placeholder="e.g. 'thumbs touching index fingers, feeling calm'" />
+      <button id="detect">🔍 Detect Mudra</button>
       <div id="detection-result" class="result"></div>
     </div>
 
-    <div class="card">
-      <h2>Available Mudras</h2>
+    <div class="card animate-fade-in">
+      <h2>📚 Explore All Mudras</h2>
+      <div class="search-container">
+        <input type="text" id="search" placeholder="🔍 Search mudras by name or benefit..." />
+      </div>
+      <div class="quartz-filter">
+        <span style="display: flex; align-items: center; font-weight: 600; margin-right: 10px;">Filter by difficulty:</span>
+        <button class="filter-btn active" data-filter="all">All Levels</button>
+        <button class="filter-btn" data-filter="beginner">🟢 Beginner</button>
+        <button class="filter-btn" data-filter="intermediate">🟡 Intermediate</button>
+        <button class="filter-btn" data-filter="advanced">🔴 Advanced</button>
+      </div>
       <div id="mudra-list"></div>
+    </div>
+
+    <div class="card animate-fade-in favorites-section" id="favorites-section" style="display: none;">
+      <h2>⭐ Your Favorite Mudras</h2>
+      <p>Quick access to mudras you love practicing.</p>
+      <div id="favorites-list"></div>
     </div>
   </main>
 
