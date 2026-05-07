@@ -89,14 +89,8 @@ function updateStatsDisplay() {
 
 // Load all mudras on page load
 async function fetchMudras() {
-  try {
-    const res = await fetch(`${apiBase}/mudras`);
-    if (!res.ok) throw new Error(`Failed to load mudras: ${res.status}`);
-    return res.json();
-  } catch (error) {
-    console.error('Error loading mudras:', error);
-    return [];
-  }
+  // Return static data instead of API call
+  return allMudras;
 }
 
 // Display chakras
@@ -124,59 +118,58 @@ async function displayChakras() {
 
 // Search mudras
 async function searchMudras(query) {
-  try {
-    const res = await fetch(`${apiBase}/mudras/search?query=${encodeURIComponent(query)}`);
-    if (!res.ok) return [];
-    return res.json();
-  } catch (error) {
-    console.error('Error searching:', error);
-    return [];
-  }
+  // Local search instead of API call
+  query = query.toLowerCase();
+  return allMudras.filter(mudra =>
+    mudra.name.toLowerCase().includes(query) ||
+    mudra.benefits.some(b => b.toLowerCase().includes(query)) ||
+    mudra.meaning.toLowerCase().includes(query)
+  );
 }
 
 // Get chakra information
 async function getChakras() {
-  try {
-    const res = await fetch(`${apiBase}/chakras`);
-    if (!res.ok) return {};
-    return res.json();
-  } catch (error) {
-    console.error('Error loading chakras:', error);
-    return {};
-  }
+  // Return static chakra data
+  const chakraMap = {};
+  allMudras.forEach(mudra => {
+    if (!chakraMap[mudra.chakra]) {
+      chakraMap[mudra.chakra] = [];
+    }
+    chakraMap[mudra.chakra].push(mudra.name);
+  });
+  return chakraMap;
 }
 
 // Get stats
 async function getStats() {
-  try {
-    const res = await fetch(`${apiBase}/stats/daily`);
-    if (!res.ok) return {};
-    return res.json();
-  } catch (error) {
-    console.error('Error loading stats:', error);
-    return {};
-  }
+  // Return local stats
+  return loadStats();
 }
 
 // Advanced recommendations with mood
 async function getAdvancedRecommendations(goal, mood, difficulty = 'all') {
-  try {
-    const endpoint = difficulty !== 'all' 
-      ? `${apiBase}/recommend/advanced?goal=${goal}&mood=${mood}&difficulty=${difficulty}`
-      : `${apiBase}/recommend`;
-    
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goal, mood }),
-    });
-    
-    if (!res.ok) throw new Error('Recommendation failed');
-    return res.json();
-  } catch (error) {
-    console.error('Error getting recommendations:', error);
-    return [];
+  // Local recommendations instead of API call
+  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate delay
+
+  const recommendations = {
+    "stress": ["Gyan Mudra", "Shuni Mudra", "Vayu Mudra"],
+    "focus": ["Gyan Mudra", "Prana Mudra", "Vayu Mudra"],
+    "energy": ["Prana Mudra", "Apana Mudra"],
+    "digestion": ["Prana Mudra", "Apana Mudra"],
+    "sleep": ["Gyan Mudra", "Shuni Mudra"],
+    "anxiety": ["Vayu Mudra", "Shuni Mudra"],
+    "confidence": ["Prana Mudra", "Apana Mudra"],
+    "creativity": ["Gyan Mudra", "Prana Mudra"]
+  };
+
+  let mudraNames = recommendations[goal] || ["Gyan Mudra", "Prana Mudra"];
+  let mudras = allMudras.filter(m => mudraNames.includes(m.name));
+
+  if (difficulty !== 'all') {
+    mudras = mudras.filter(m => m.difficulty === difficulty);
   }
+
+  return mudras;
 }
 
 // Timer functionality
@@ -319,19 +312,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('themeToggle').textContent = isDarkMode ? '☀️' : '🌙';
   });
   
-  // Detect mudra
-  document.getElementById('detect').addEventListener('click', async () => {
-    const hint = document.getElementById('hint').value;
-    const res = await fetch(`${apiBase}/detect`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ gesture_hint: hint }),
-    });
-    const result = await res.json();
-    document.getElementById('detection-result').innerHTML = 
-      `<strong>Detected:</strong> ${result.mudra}<br>` +
-      `<strong>Meaning:</strong> ${result.details?.meaning}<br>` +
-      `<strong>Benefits:</strong> ${result.details?.benefits?.join(', ')}`;
+  // Detect mudra (now shows examples)
+  document.getElementById('show-examples').addEventListener('click', () => {
+    showExamples();
   });
   
   // Daily suggestion

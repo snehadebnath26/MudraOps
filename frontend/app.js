@@ -1,5 +1,56 @@
 const apiBase = 'http://localhost:8000';
-let allMudras = [];
+let allMudras = [
+  {
+    "name": "Gyan Mudra",
+    "meaning": "Gesture of knowledge",
+    "benefits": ["Improves concentration", "Promotes calm and memory", "Enhances intuition"],
+    "duration_minutes": 10,
+    "difficulty": "beginner",
+    "chakra": "Crown",
+    "instructions": "Touch thumb and index finger, keep other fingers extended",
+    "image": "https://images.pexels.com/photos/3823039/pexels-photo-3823039.jpeg?auto=compress&cs=tinysrgb&w=400"
+  },
+  {
+    "name": "Prana Mudra",
+    "meaning": "Gesture of life force",
+    "benefits": ["Increases energy", "Supports digestion", "Boosts immunity"],
+    "duration_minutes": 5,
+    "difficulty": "beginner",
+    "chakra": "Root",
+    "instructions": "Touch thumb, ring, and pinky finger together",
+    "image": "https://images.pexels.com/photos/3822417/pexels-photo-3822417.jpeg?auto=compress&cs=tinysrgb&w=400"
+  },
+  {
+    "name": "Apana Mudra",
+    "meaning": "Gesture of elimination",
+    "benefits": ["Cleanses the system", "Supports detoxification", "Aids digestion"],
+    "duration_minutes": 15,
+    "difficulty": "beginner",
+    "chakra": "Sacral",
+    "instructions": "Touch thumb with middle and ring finger",
+    "image": "https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=400"
+  },
+  {
+    "name": "Shuni Mudra",
+    "meaning": "Gesture of patience",
+    "benefits": ["Improves discipline", "Eases anxiety", "Reduces stress"],
+    "duration_minutes": 12,
+    "difficulty": "beginner",
+    "chakra": "Root",
+    "instructions": "Touch thumb with middle finger, keep others extended",
+    "image": "https://images.pexels.com/photos/3552413/pexels-photo-3552413.jpeg?auto=compress&cs=tinysrgb&w=400"
+  },
+  {
+    "name": "Vayu Mudra",
+    "meaning": "Gesture of air",
+    "benefits": ["Relieves anxiety", "Reduces trembling", "Improves focus"],
+    "duration_minutes": 8,
+    "difficulty": "intermediate",
+    "chakra": "Heart",
+    "instructions": "Fold index finger, touch thumb tip with it",
+    "image": "https://images.pexels.com/photos/3822719/pexels-photo-3822719.jpeg?auto=compress&cs=tinysrgb&w=400"
+  }
+];
 let favorites = JSON.parse(localStorage.getItem('mudraFavorites') || '[]');
 let currentMood = null;
 let timerInterval = null;
@@ -32,11 +83,8 @@ function updateStatsDisplay() {
 }
 
 async function fetchMudras() {
-  const res = await fetch(`${apiBase}/mudras`);
-  if (!res.ok) {
-    throw new Error(`Failed to load mudras: ${res.status}`);
-  }
-  return res.json();
+  // Return static data instead of API call
+  return allMudras;
 }
 
 // Add difficulty levels to mudras (mock data)
@@ -49,82 +97,87 @@ function addDifficultyLevels(mudras) {
   return difficulties;
 }
 
+function getMudraImage(mudra) {
+  if (mudra.image) {
+    return mudra.image;
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" rx="26" fill="#93c5fd"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="52">🙏</text></svg>`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
 async function recommend() {
   const goal = document.getElementById('goal').value;
   const result = document.getElementById('recommendation-result');
   result.innerHTML = '<div style="text-align: center; color: #4ecdc4;">🔄 Finding your perfect mudras...</div>';
 
-  try {
-    const res = await fetch(`${apiBase}/recommend`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goal }),
-    });
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 500));
 
-    if (!res.ok) {
-      const body = await res.json();
-      result.innerHTML = `<div style="color: #ff6b35;">❌ ${body.detail || 'Recommendation failed.'}</div>`;
-      return;
-    }
+  // Static recommendations based on goal
+  const recommendations = {
+    "stress": ["Gyan Mudra", "Shuni Mudra", "Vayu Mudra"],
+    "focus": ["Gyan Mudra", "Prana Mudra", "Vayu Mudra"],
+    "energy": ["Prana Mudra", "Apana Mudra"],
+    "digestion": ["Prana Mudra", "Apana Mudra"],
+    "sleep": ["Gyan Mudra", "Shuni Mudra"],
+    "anxiety": ["Vayu Mudra", "Shuni Mudra"],
+    "confidence": ["Prana Mudra", "Apana Mudra"],
+    "creativity": ["Gyan Mudra", "Prana Mudra"]
+  };
 
-    const mudras = await res.json();
-    result.innerHTML = `<div style="color: #4ecdc4; margin-bottom: 15px;">✨ Here are ${mudras.length} mudras for your ${goal} goal:</div>`;
-    
-    const difficulties = addDifficultyLevels(mudras);
-    
-    mudras.forEach(m => {
-      const card = document.createElement('div');
-      card.className = 'mudra-item animate-fade-in';
-      const isFavorite = favorites.includes(m.name);
-      const difficulty = difficulties[m.name];
-      const difficultyClass = `difficulty-${difficulty}`;
-      
-      card.innerHTML = `
-        <strong>${m.name}<span class="difficulty-badge ${difficultyClass}">${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}</span></strong>
-        <p>${m.meaning}</p>
-        <em>Benefits: ${m.benefits.join(', ')}</em>
-        <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite('${m.name}')">
-          ${isFavorite ? '❤️' : '🤍'} ${isFavorite ? 'Saved' : 'Save'}
-        </button>
-      `;
-      result.appendChild(card);
-    });
-    
-    recordPractice();
-  } catch (error) {
-    result.innerHTML = `<div style="color: #ff6b35;">❌ Recommendation error: ${error.message}</div>`;
-  }
+  const mudraNames = recommendations[goal] || ["Gyan Mudra", "Prana Mudra"];
+  const mudras = allMudras.filter(m => mudraNames.includes(m.name));
+
+  result.innerHTML = `<div style="color: #4ecdc4; margin-bottom: 15px;">✨ Here are ${mudras.length} mudras for your ${goal} goal:</div>`;
+
+  const difficulties = addDifficultyLevels(mudras);
+
+  mudras.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'mudra-item animate-fade-in';
+    const isFavorite = favorites.includes(m.name);
+    const difficulty = difficulties[m.name];
+    const difficultyClass = `difficulty-${difficulty}`;
+    const image = getMudraImage(m);
+
+    card.innerHTML = `
+      <img class="mudra-image" src="${image}" alt="${m.name}" />
+      <strong>${m.name}<span class="difficulty-badge ${difficultyClass}">${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}</span></strong>
+      <p>${m.meaning}</p>
+      <em>Benefits: ${m.benefits.join(', ')}</em>
+      <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-mudra="${m.name}" onclick="toggleFavorite('${m.name}')">
+        ${isFavorite ? '❤️' : '🤍'} ${isFavorite ? 'Saved' : 'Save'}
+      </button>
+    `;
+    result.appendChild(card);
+  });
+
+  recordPractice();
 }
 
-async function detect() {
-  const hint = document.getElementById('hint').value;
+function showExamples() {
   const result = document.getElementById('detection-result');
-  result.innerHTML = '<div style="text-align: center; color: #4ecdc4;">🔍 Analyzing your gesture...</div>';
+  result.innerHTML = '<div style="color: #4ecdc4; margin-bottom: 15px;">🎭 Here are some popular mudras you can try:</div>';
 
-  try {
-    const res = await fetch(`${apiBase}/detect`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ gesture_hint: hint }),
-    });
+  const examples = allMudras.slice(0, 3); // Show first 3 mudras
 
-    if (!res.ok) {
-      const body = await res.json();
-      result.innerHTML = `<div style="color: #ff6b35;">❌ ${body.detail || 'Detection failed.'}</div>`;
-      return;
-    }
+  examples.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'mudra-item animate-fade-in';
+    const isFavorite = favorites.includes(m.name);
+    const image = getMudraImage(m);
 
-    const payload = await res.json();
-    result.innerHTML = `
-      <div style="color: #4ecdc4; font-size: 1.2em;">🎯 Detected: <strong>${payload.mudra}</strong></div>
-      <div>Confidence: <strong>${payload.confidence}</strong></div>
-      <div style="margin-top: 10px; font-size: 0.9em; color: #6c757d;">
-        💡 Try describing the position of your fingers or how it makes you feel!
-      </div>
+    card.innerHTML = `
+      <img class="mudra-image" src="${image}" alt="${m.name}" />
+      <strong>${m.name}</strong> - ${m.meaning}<br/>
+      <small>Benefits: ${m.benefits.join(', ')}</small><br/>
+      <small><em>Instructions: ${m.instructions}</em></small>
+      <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-mudra="${m.name}" onclick="toggleFavorite('${m.name}')">
+        ${isFavorite ? '❤️' : '🤍'} ${isFavorite ? 'Saved' : 'Save'}
+      </button>
     `;
-  } catch (error) {
-    result.innerHTML = `<div style="color: #ff6b35;">❌ Detection error: ${error.message}</div>`;
-  }
+    result.appendChild(card);
+  });
 }
 
 function toggleFavorite(mudraName) {
@@ -138,6 +191,15 @@ function toggleFavorite(mudraName) {
   updateMudraList();
   updateFavoritesList();
   updateStatsDisplay();
+  refreshFavoriteButtons(mudraName);
+}
+
+function refreshFavoriteButtons(mudraName) {
+  const isFavorite = favorites.includes(mudraName);
+  document.querySelectorAll(`.favorite-btn[data-mudra="${mudraName}"]`).forEach(button => {
+    button.classList.toggle('active', isFavorite);
+    button.innerHTML = isFavorite ? '❤️ Saved' : '🤍 Save';
+  });
 }
 
 function updateMudraList(searchTerm = '') {
@@ -168,10 +230,12 @@ function updateMudraList(searchTerm = '') {
     const difficulty = difficulties[m.name];
     const difficultyClass = `difficulty-${difficulty}`;
     
+    const image = getMudraImage(m);
     card.innerHTML = `
+      <img class="mudra-image" src="${image}" alt="${m.name}" />
       <strong>${m.name}<span class="difficulty-badge ${difficultyClass}">${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}</span></strong> — ${m.meaning}<br/>
       <small>Benefits: ${m.benefits.join(', ')}</small>
-      <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite('${m.name}')">
+      <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-mudra="${m.name}" onclick="toggleFavorite('${m.name}')">
         ${isFavorite ? '❤️' : '🤍'} ${isFavorite ? 'Saved' : 'Save'}
       </button>
     `;
@@ -201,10 +265,12 @@ function updateFavoritesList() {
       const difficulty = difficulties[mudra.name];
       const difficultyClass = `difficulty-${difficulty}`;
       
+      const image = getMudraImage(mudra);
       card.innerHTML = `
+        <img class="mudra-image" src="${image}" alt="${mudra.name}" />
         <strong>${mudra.name}<span class="difficulty-badge ${difficultyClass}">${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}</span></strong> — ${mudra.meaning}<br/>
         <small>Benefits: ${mudra.benefits.join(', ')}</small>
-        <button class="favorite-btn active" onclick="toggleFavorite('${mudra.name}')">
+        <button class="favorite-btn active" data-mudra="${mudra.name}" onclick="toggleFavorite('${mudra.name}')">
           ❤️ Remove
         </button>
       `;
@@ -272,14 +338,55 @@ function displayDailySuggestion() {
   if (dailyMudra) {
     const difficulties = addDifficultyLevels(allMudras);
     const difficulty = difficulties[dailyMudra.name];
+    const image = getMudraImage(dailyMudra);
     document.getElementById('daily-mudra-text').innerHTML = `
+      <img class="mudra-image" src="${image}" alt="${dailyMudra.name}" />
       <strong>${dailyMudra.name}</strong> - ${dailyMudra.meaning}<br/>
       <em style="font-size: 0.9em;">Benefits: ${dailyMudra.benefits.join(', ')}</em><br/>
+      <em style="font-size: 0.8em;">Instructions: ${dailyMudra.instructions}</em><br/>
       <span style="display: inline-block; margin-top: 10px; padding: 4px 10px; background: #fff; border-radius: 20px; font-size: 0.85em;">
         📊 ${difficulty} level
       </span>
     `;
   }
+}
+
+function populateChakraGuide() {
+  const chakraMap = {
+    'Root': { color: '#ef4444', description: 'Stability, grounding, and basic survival energy.' },
+    'Sacral': { color: '#f97316', description: 'Creativity, emotion, sensuality, and flow.' },
+    'Solar Plexus': { color: '#eab308', description: 'Confidence, motivation, and personal power.' },
+    'Heart': { color: '#22c55e', description: 'Love, compassion, balance, and healing.' },
+    'Throat': { color: '#0ea5e9', description: 'Communication, self-expression, and truth.' },
+    'Third Eye': { color: '#8b5cf6', description: 'Intuition, insight, and inner vision.' },
+    'Crown': { color: '#6366f1', description: 'Spiritual connection, wisdom, and higher purpose.' }
+  };
+
+  const chakraInfo = document.getElementById('chakra-info');
+  chakraInfo.innerHTML = '';
+
+  const chakras = Array.from(new Set(allMudras.map(m => m.chakra))).map(chakra => ({
+    name: chakra,
+    ...chakraMap[chakra] || { color: '#38bdf8', description: 'Supports your energy flow and practice.' }
+  }));
+
+  chakras.forEach(chakra => {
+    const card = document.createElement('div');
+    card.style.padding = '20px';
+    card.style.borderRadius = '16px';
+    card.style.background = '#ffffff';
+    card.style.boxShadow = '0 8px 24px rgba(15, 23, 42, 0.08)';
+    card.style.borderLeft = `6px solid ${chakra.color}`;
+    card.innerHTML = `
+      <h3 style="margin-top: 0; color: ${chakra.color}; font-family: 'Poppins', sans-serif;">${chakra.name} Chakra</h3>
+      <p style="margin: 0.4em 0 0; color: #334155; line-height: 1.6;">${chakra.description}</p>
+      <p style="margin: 0.8em 0 0; color: #64748b; font-size: 0.95em;">Mudras for this chakra:</p>
+      <ul style="margin: 8px 0 0 18px; color: #334155;">
+        ${allMudras.filter(m => m.chakra === chakra.name).map(m => `<li>${m.name} — ${m.meaning}</li>`).join('')}
+      </ul>
+    `;
+    chakraInfo.appendChild(card);
+  });
 }
 
 function recordPractice() {
@@ -367,11 +474,12 @@ function toggleDarkMode() {
 
 async function loadMudras() {
   try {
-    allMudras = await fetchMudras();
+    // Use static data instead of API call
     updateMudraList();
     updateFavoritesList();
-    displayDailySuggestion();
     updateStatsDisplay();
+    displayDailySuggestion();
+    populateChakraGuide();
   } catch (error) {
     document.getElementById('mudra-list').innerHTML = `<div style="color: #ff6b35;">❌ Failed to load mudras: ${error.message}</div>`;
   }
@@ -379,18 +487,11 @@ async function loadMudras() {
 
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('recommend').addEventListener('click', recommend);
-  document.getElementById('detect').addEventListener('click', detect);
+  document.getElementById('show-examples').addEventListener('click', showExamples);
   document.getElementById('tutorial').addEventListener('click', showTutorial);
   document.getElementById('themeToggle').addEventListener('click', toggleDarkMode);
   document.getElementById('start-timer').addEventListener('click', startTimer);
   document.getElementById('stop-timer').addEventListener('click', stopTimer);
-  document.getElementById('try-daily').addEventListener('click', () => {
-    const dailyMudra = getDailyMudra();
-    if (dailyMudra) {
-      document.getElementById('goal').value = 'stress';
-      document.getElementById('recommend').click();
-    }
-  });
   
   document.querySelector('.mood-tracker').addEventListener('click', handleMoodSelection);
   document.getElementById('search').addEventListener('input', (e) => updateMudraList(e.target.value));

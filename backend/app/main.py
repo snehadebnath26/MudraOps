@@ -241,14 +241,9 @@ def detect_mudra(request: DetectRequest):
         "Ushas Mudra": ["dawn", "morning", "alertness"],
     }
     
-    matches = {}
-    for mudra, keywords_list in keywords.items():
-        count = sum(1 for kw in keywords_list if kw in text)
-        if count > 0:
-            matches[mudra] = count
-    
+    matches: Dict[str, int] = {}
     if matches:
-        mudra_name = max(matches, key=matches.get)
+        mudra_name = max(matches.items(), key=lambda item: item[1])[0]
         return {
             "mudra": mudra_name,
             "confidence": matches[mudra_name],

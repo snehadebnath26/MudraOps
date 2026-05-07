@@ -9,31 +9,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <style>
     :root { --primary: #1e40af; --secondary: #0891b2; --accent: #7c3aed; --dark: #0f172a; --light: #f1f5f9; --dark-bg: #0a0e27; --dark-card: #1a2847; }
-    body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f172a 100%); color: #e2e8f0; line-height: 1.6; transition: background 0.3s ease, color 0.3s ease; min-height: 100vh; }
-    body.dark-mode { background: linear-gradient(135deg, #000814 0%, #0a0e27 50%, #000814 100%); color: #f1f5f9; }
+    body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: #f1f5f9; color: #0f172a; line-height: 1.6; transition: background 0.3s ease, color 0.3s ease; min-height: 100vh; }
+    body.dark-mode { background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f172a 100%); color: #e2e8f0; }
     body.dark-mode .card { background: var(--dark-card); border-color: rgba(8, 145, 178, 0.15); }
     body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #0f3460; color: #e2e8f0; border-color: #0891b2; }
-    header { background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%); color: white; padding: 30px 20px; text-align: center; box-shadow: 0 4px 20px rgba(30, 64, 175, 0.3); display: flex; justify-content: space-between; align-items: center; }
+    header { background: linear-gradient(180deg, rgba(15,23,42,0.9), rgba(15,23,42,0.75)), url('https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat; color: white; padding: 30px 20px; text-align: center; box-shadow: 0 4px 20px rgba(30, 64, 175, 0.3); display: flex; justify-content: space-between; align-items: center; min-height: 180px; }
     header > div:first-child { flex: 1; }
-    header h1 { margin: 0; font-size: 2.8em; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-family: 'Playfair Display', serif; letter-spacing: -1px; }
+    header h1 { margin: 0; font-size: 2.8em; text-shadow: 2px 2px 8px rgba(0,0,0,0.45); font-family: 'Playfair Display', serif; letter-spacing: -1px; }
     header p { margin: 10px 0 0; font-size: 1.1em; opacity: 0.9; font-weight: 300; }
     .header-controls { display: flex; gap: 15px; }
     .theme-toggle { background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 18px; transition: all 0.3s ease; }
     .theme-toggle:hover { background: rgba(255,255,255,0.3); }
     main { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-    .card { background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); margin-bottom: 25px; padding: 25px; border: 1px solid rgba(255,255,255,0.8); transition: transform 0.3s ease, box-shadow 0.3s ease; background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,245,250,0.95) 100%); }
+    .card { background: white; color: #0f172a; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); margin-bottom: 25px; padding: 25px; border: 1px solid rgba(255,255,255,0.8); transition: transform 0.3s ease, box-shadow 0.3s ease; background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,245,250,0.95) 100%); }
     .card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(14, 165, 233, 0.2); }
     .card h2 { color: #1e40af; margin-top: 0; font-size: 2em; border-bottom: 3px solid #0891b2; padding-bottom: 10px; font-family: 'Poppins', sans-serif; font-weight: 700; letter-spacing: 0.5px; }
+    body.dark-mode .card { background: var(--dark-card); border-color: rgba(8, 145, 178, 0.15); color: #e2e8f0; }
     body.dark-mode .card h2 { color: #38bdf8; border-color: #0891b2; }
     button { background: linear-gradient(135deg, #0891b2 0%, #0369a1 100%); color: white; border: none; border-radius: 12px; padding: 14px 20px; cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(8, 145, 178, 0.3); font-size: 15px; letter-spacing: 0.3px; }
     button:hover { background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(8, 145, 178, 0.4); }
     button:active { transform: translateY(0); }
     label { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1.05em; }
-    input, select, textarea { width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 16px; transition: border-color 0.3s ease; }
+    input, select, textarea { width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 16px; transition: border-color 0.3s ease; background: white; }
     input:focus, select:focus, textarea:focus { outline: none; border-color: #0891b2; box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.2); }
     .result { margin-top: 20px; padding: 15px; background: #f1f5f9; border-radius: 12px; border-left: 4px solid #0891b2; }
-    .mudra-item { margin-bottom: 15px; padding: 15px; background: #f1f5f9; border-radius: 10px; border-left: 4px solid #1e40af; transition: background-color 0.3s ease; }
+    .mudra-item { margin-bottom: 15px; padding: 15px; background: #f1f5f9; border-radius: 10px; border-left: 4px solid #1e40af; transition: background-color 0.3s ease; display: grid; grid-template-columns: 100px 1fr; gap: 15px; align-items: center; }
     .mudra-item:hover { background: #e2e8f0; }
+    .mudra-image { width: 100px; height: 100px; border-radius: 18px; object-fit: cover; box-shadow: 0 8px 20px rgba(30, 64, 175, 0.15); }
     .mudra-item strong { color: #1e293b; font-size: 1.15em; font-family: 'Poppins', sans-serif; font-weight: 700; }
     body.dark-mode .mudra-item strong { color: #0891b2; }
     .mudra-item em { color: #64748b; font-family: 'Inter', sans-serif; }
@@ -111,8 +113,7 @@
       <h2>✨ Daily Mudra Suggestion</h2>
       <div id="daily-suggestion-box" class="daily-suggestion">
         <h4>🌟 Today's Recommendation</h4>
-        <p id="daily-mudra-text">Loading your daily suggestion...</p>
-        <button id="try-daily" style="margin-top: 10px;">Try This Mudra</button>
+        <p id="daily-mudra-text">Your daily mudra suggestion appears here.</p>
       </div>
     </div>
 
@@ -154,17 +155,15 @@
         <button class="mood-btn" data-mood="focused">🎯 Focused</button>
         <button class="mood-btn" data-mood="tired">😴 Tired</button>
       </div>
-      <button id="recommend">Get Recommendations</button>
+      <button id="recommend">Show Recommendations</button>
       <button class="tutorial-btn" id="tutorial">📚 Learn Mudra Basics</button>
       <div id="recommendation-result" class="result"></div>
     </div>
 
     <div class="card animate-fade-in">
-      <h2>🔍 Mudra Detection (Interactive Demo)</h2>
-      <p>Type a hint about how your mudra feels or describe the gesture, and see the AI prediction.</p>
-      <label for="hint">Gesture description</label>
-      <input id="hint" placeholder="e.g. 'thumbs touching index fingers, feeling calm'" />
-      <button id="detect">🔍 Detect Mudra</button>
+      <h2>🔍 Mudra Examples</h2>
+      <p>Explore different mudras and their benefits. Click on any mudra to see details.</p>
+      <button id="show-examples">🎭 Show Mudra Examples</button>
       <div id="detection-result" class="result"></div>
     </div>
 
@@ -196,6 +195,6 @@
     </div>
   </main>
 
-  <script src="app-advanced.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
